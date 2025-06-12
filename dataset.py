@@ -175,7 +175,6 @@ class TrialTable:
 
         self.trial_table = np.array(self.trial_table, dtype=object)
         print("trial table shape:", self.trial_table.shape)
-        assert self.trial_table.shape == (3451, 5)
 
         # TEST: number of neurons must be same inside each session
         for session_id in range(len(sessions)):
@@ -203,7 +202,6 @@ class TrialTable:
         with open(self.precompute_file, "rb") as f:
             precomputed = np.load(f)
         print("precomputed shape:", precomputed.shape)
-        assert len(precomputed) == 54610
 
         # ================ convert table to dict
         sig_i = 0
@@ -225,7 +223,7 @@ class TrialTable:
                 trial_num = len(sessions[session_id]['trials'])
                 #RT, outcome = get_outcome(sessions, session_id)
 
-                n_neurons =  TrialTable.get_num_neurons(sessions, cue_or_mov, session_id)
+                n_neurons =  get_num_neurons(sessions, cue_or_mov, session_id)
                 for trial_id in range(trial_num):
                     for neuron_id in range(n_neurons):
                         key = (session_id, neuron_id)

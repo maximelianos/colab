@@ -37,7 +37,5 @@ def compute_id_matrix(sessions, args, ttable, latents, target_outcome):
                         latents_arr.append(latent)
                     sample_i += 1
             latents_arr = np.stack(latents_arr)  # (n_points, n_features)
-            print(session_id, neuron_id, latents_arr.shape)
-            print(np.sum(np.isnan(latents)))
             results[session_id, neuron_id] = intrinsic_dimension_cpu(latents_arr)
     return results
