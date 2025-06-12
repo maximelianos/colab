@@ -79,8 +79,8 @@ class LongLSTM(nn.Module):
         fake_input = torch.zeros((B, self.pred_steps, self.hidden_size)).to(x.device)
 
         # hidden state and cell state
-        hidden = state[:, :, :self.hidden_size]
-        cell = state[:, :, self.hidden_size:]
+        hidden = state[:, :, :self.hidden_size].contiguous()
+        cell = state[:, :, self.hidden_size:].contiguous()
 
         # decode
         out, _ = self.decoder(fake_input, (hidden, cell))  # hidden has shape (B, pred_steps, hidden_size)
