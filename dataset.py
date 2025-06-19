@@ -47,7 +47,7 @@ def get_outcome(sessions, session_id):
 
 def convolve(signal: np.ndarray, win_size: int):
     """
-    Gaussian filter with window size = 6 sigma.
+    Gaussian filter with window size = 6 sigma (also known as STD).
 
     Arguments:
         signal: np.ndarray, shape (n_steps)
@@ -55,11 +55,13 @@ def convolve(signal: np.ndarray, win_size: int):
     Returns:
         np.ndarray, shape (n_steps)
     """
-
-    # TODO padding with mean
+    # padding with mean
+    pad_size = win_size
+    sig_pad = np.pad(sig, pad_size, mode='mean', stat_length=pad_size)
+    
     std = win_size / 6 # rule of 3 sigma
     win = scipy.signal.windows.gaussian(win_size, std)
-    sig = scipy.signal.convolve(signal, win, mode='same') / sum(win)
+    sig = scipy.signal.convolve(sig_pad, win, mode='same')[pad_size:len(sig_pad)-pad_size] / sum(win)
     return sig
 
 
