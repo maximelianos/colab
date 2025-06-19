@@ -288,8 +288,8 @@ class NeuronDataset(data.Dataset):
                 RT, outcome = get_outcome(sessions, session_id)
                 for trial_id in range(1, trial_num):
                     # === skip early outcomes?
-                    if outcome[trial_id] == 0:
-                        continue
+                    #if outcome[trial_id] == 0:
+                    #    continue
                     trial = sessions[session_id]['trials'][trial_id, 0]
                     n_neurons = len(trial[cue_or_mov])
                     for neuron_id in range(n_neurons):

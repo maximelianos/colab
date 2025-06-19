@@ -5,6 +5,7 @@ from intrinsic_dimension import intrinsic_dimension_cpu
 
 def compute_id_matrix(sessions, args, ttable, latents, target_outcome):
     """
+    Compute Intrinsic Dimension for each session + neuron combination.
 
     Arguments:
         sessions: matlab structure

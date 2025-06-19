@@ -5,6 +5,8 @@ from dataset import normalize
 
 def load_sample(ttable, session_id, trial_id, neuron_id):
     """
+    Load one signal.
+
     Returns:
         signal: torch.tensor (n_steps, 1)
     """
@@ -22,7 +24,7 @@ def load_sample(ttable, session_id, trial_id, neuron_id):
 
 def predict(model, args, inp):
     """
-    Predict for one signal.
+    Predict for batch of signals.
 
     Arguments:
         inp: torch tensor (b, n_steps, n_features)
@@ -33,7 +35,7 @@ def predict(model, args, inp):
     with torch.no_grad():
         # add batch dimension
         #inputs = torch.tensor(inp, dtype=torch.float)[None, :, :].to(args.DEVICE)
-        inputs = torch.tensor(inp, dtype=torch.float).to(args.DEVICE)
+        inputs = inp.to(torch.float).to(args.DEVICE)
 
         # forward, produces output signal of shape (b, n_steps, n_features)
         # and latents of shape (b, latent_size)
@@ -85,9 +87,10 @@ def evaluate_and_save(ttable, args, model):
         np.save(f, latents)
 
 
-def plot_average(ttable, predictions, args, session_id, neuron_id, fig, ax, target_outcome=1):
+def plot_average(ttable, predictions, args, session_id, neuron_id, fig, ax, target_outcome=1, plot_things="true,pred,err"):
     """
-    Load predictions relevant to session, neuron and target outcome.
+    Load predictions filtered by session, neuron and target outcome,
+    and plot them.
     """
     pred_arr = []
     true_arr = []
@@ -120,21 +123,24 @@ def plot_average(ttable, predictions, args, session_id, neuron_id, fig, ax, targ
 
     # === plot
     ax.clear()
-    ax.plot(x, median_pred, color='b', label='predicted')
-    ax.plot(x, median_true, color='g', label='true')
-    ax.plot(x, median_err, color='r', label='error')
+    if "pred" in plot_things:
+        ax.plot(x, median_pred, color='b', label='predicted')
 
-    # quantile_1_4 = np.quantile(pred_arr, 0.25, axis=0)
-    # quantile_3_4 = np.quantile(pred_arr, 0.75, axis=0)
-    # ax.fill_between(x, quantile_1_4, quantile_3_4, color='b', alpha=0.2)
+        quantile_1_4 = np.quantile(pred_arr, 0.25, axis=0)
+        quantile_3_4 = np.quantile(pred_arr, 0.75, axis=0)
+        ax.fill_between(x, quantile_1_4, quantile_3_4, color='b', alpha=0.2)
+    if "true" in plot_things:
+        ax.plot(x, median_true, color='g', label='true')
 
-    quantile_1_4 = np.quantile(true_arr, 0.25, axis=0)
-    quantile_3_4 = np.quantile(true_arr, 0.75, axis=0)
-    ax.fill_between(x, quantile_1_4, quantile_3_4, color='g', alpha=0.2)
+        quantile_1_4 = np.quantile(true_arr, 0.25, axis=0)
+        quantile_3_4 = np.quantile(true_arr, 0.75, axis=0)
+        ax.fill_between(x, quantile_1_4, quantile_3_4, color='g', alpha=0.2)
+    if "err" in plot_things:
+        ax.plot(x, median_err, color='r', label='error')
 
-    quantile_1_4 = np.quantile(err_arr, 0.25, axis=0)
-    quantile_3_4 = np.quantile(err_arr, 0.75, axis=0)
-    ax.fill_between(x, quantile_1_4, quantile_3_4, color='r', alpha=0.2)
+        quantile_1_4 = np.quantile(err_arr, 0.25, axis=0)
+        quantile_3_4 = np.quantile(err_arr, 0.75, axis=0)
+        ax.fill_between(x, quantile_1_4, quantile_3_4, color='r', alpha=0.2)
 
     ax.set_title('Neuron ' + str(neuron_id))
     ax.set_xlabel('time aligned to cue, s', fontsize=10)
