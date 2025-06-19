@@ -57,12 +57,12 @@ def convolve(signal: np.ndarray, win_size: int):
     """
     # padding with mean
     pad_size = win_size
-    sig_pad = np.pad(sig, pad_size, mode='mean', stat_length=pad_size)
+    signal_pad = np.pad(signal, pad_size, mode='mean', stat_length=pad_size)
     
     std = win_size / 6 # rule of 3 sigma
     win = scipy.signal.windows.gaussian(win_size, std)
-    sig = scipy.signal.convolve(sig_pad, win, mode='same')[pad_size:len(sig_pad)-pad_size] / sum(win)
-    return sig
+    smooth = scipy.signal.convolve(signal_pad, win, mode='same')[pad_size:len(signal_pad)-pad_size] / sum(win)
+    return smooth
 
 
 def load_trial(sessions, cue_or_mov, session_id: int, trial_id: int, neuron_id: int, n_subsample: int) -> np.ndarray:
